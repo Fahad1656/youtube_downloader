@@ -20,10 +20,16 @@ async def get_available_resolutions(url: str, timestamp: str = ""):
         ydl_opts = {
             "quiet": True,
             "no_warnings": True,
-            "noplaylist": True,  # 👈 Add this line
-            "extract_flat": "discard"  # 👈 Optional but recommended
+            "noplaylist": True,
+            "extract_flat": "discard",
+            "geo_bypass": True,
+            "force_ipv4": True,
+            "retries": 5,
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "http_headers": {"Accept-Language": "en-US,en;q=0.9"},
+            "nocheckcertificate": True,
         }
-        
+
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(decoded_url, download=False)
             formats = info_dict.get("formats", [])
@@ -36,7 +42,6 @@ async def get_available_resolutions(url: str, timestamp: str = ""):
     except Exception as e:
         print(f"❌ Error fetching resolutions: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error fetching resolutions: {str(e)}")
-
 
 
 

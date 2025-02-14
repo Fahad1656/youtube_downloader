@@ -16,6 +16,10 @@ WORKDIR /app
 # Copy the contents of the local repository to the container
 COPY . .
 
+#resolve cookies issue
+
+COPY cookies.txt /app/cookies.txt
+
 # Install dependencies from requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 

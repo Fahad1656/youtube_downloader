@@ -25,6 +25,7 @@ async def get_available_resolutions(url: str, timestamp: str = ""):
             "geo_bypass": True,
             "force_ipv4": True,
             "retries": 5,
+             "cookiefile": "cookies.txt",
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             "http_headers": {"Accept-Language": "en-US,en;q=0.9"},
             "nocheckcertificate": True,
@@ -57,6 +58,7 @@ async def download_video(url: str, itag: str):
             "outtmpl": f"{unique_id}.%(ext)s",
             "merge_output_format": "mp4",
             "quiet": False,
+            "cookiefile": "cookies.txt",
             "noplaylist": True,
             "postprocessors": [
                 {

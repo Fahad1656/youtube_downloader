@@ -1,5 +1,3 @@
-
-
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from urllib.parse import unquote
@@ -25,8 +23,7 @@ async def get_available_resolutions(url: str, timestamp: str = ""):
             "geo_bypass": True,
             "force_ipv4": True,
             "retries": 5,
-            "cookiesfrombrowser": ("chrome",),
-             "cookiefile": "cookies.txt",
+            "cookiefile": "cookies.txt",
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             "http_headers": {"Accept-Language": "en-US,en;q=0.9"},
             "nocheckcertificate": True,
@@ -36,15 +33,19 @@ async def get_available_resolutions(url: str, timestamp: str = ""):
             info_dict = ydl.extract_info(decoded_url, download=False)
             formats = info_dict.get("formats", [])
 
-        resolutions = [{"itag": fmt["format_id"], "label": fmt["format"]}
-                      for fmt in formats if fmt.get("vcodec") != "none"]
+        resolutions = [
+            {"itag": fmt["format_id"], "label": fmt["format"]}
+            for fmt in formats
+            if fmt.get("vcodec") != "none"
+        ]
 
         print(f"✅ Available resolutions ({len(resolutions)} found)")
         return {"resolutions": resolutions}
     except Exception as e:
         print(f"❌ Error fetching resolutions: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error fetching resolutions: {str(e)}")
-
+        raise HTTPException(
+            status_code=500, detail=f"Error fetching resolutions: {str(e)}"
+        )
 
 
 @router.get("/download")
@@ -60,12 +61,11 @@ async def download_video(url: str, itag: str):
             "merge_output_format": "mp4",
             "quiet": False,
             "cookiefile": "cookies.txt",
-            "cookiesfrombrowser": ("chrome",),
             "noplaylist": True,
             "postprocessors": [
                 {
                     "key": "FFmpegVideoConvertor",
-                    "preferedformat": "mp4"  # Ensure final format is MP4 with audio
+                    "preferedformat": "mp4",  # Ensure final format is MP4 with audio
                 }
             ],
         }
@@ -75,8 +75,13 @@ async def download_video(url: str, itag: str):
             downloaded_video = ydl.prepare_filename(info_dict).replace(".webm", ".mp4")
 
         # Verify the downloaded file
-        if not os.path.exists(downloaded_video) or os.path.getsize(downloaded_video) == 0:
-            raise HTTPException(status_code=500, detail="Download failed: File missing or empty.")
+        if (
+            not os.path.exists(downloaded_video)
+            or os.path.getsize(downloaded_video) == 0
+        ):
+            raise HTTPException(
+                status_code=500, detail="Download failed: File missing or empty."
+            )
 
         # Stream the file to the client
         def iter_file():
@@ -92,4 +97,6 @@ async def download_video(url: str, itag: str):
 
     except Exception as e:
         print(f"❌ Error downloading video: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error downloading video: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error downloading video: {str(e)}"
+        )
